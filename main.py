@@ -12,3 +12,4 @@ app.include_router(create_webhook_router(get_currency_rate, telegram_gateway))
 @app.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
+
