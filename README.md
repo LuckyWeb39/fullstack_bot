@@ -1,31 +1,37 @@
-# Currency Telegram Bot
+# Telegram Bot on Supabase
 
-Минимальный Telegram-бот на FastAPI. Он находит в сообщении трёхбуквенный код
-валюты, получает курс через Frankfurter и отвечает, сколько этой валюты стоит
-1 USD.
+Telegram-бот на Supabase Edge Functions. Он сохраняет входящие сообщения и
+клиентов в PostgreSQL Supabase, затем отправляет пользователю подтверждение.
 
-## Локальный запуск
+## Edge Functions
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
+- `health` — публичная проверка доступности.
+- `telegram-webhook` — принимает `POST`-обновления от Telegram, сохраняет их в
+  таблицы `clients` и `messages`, затем отвечает пользователю.
+- `messages` — публичный `GET`, возвращает сообщения от новых к старым.
+- `clients` — публичный `GET`, возвращает клиентов по времени последнего
+  сообщения, от новых к старым.
 
-Переменная `BOT_TOKEN` берётся из `.env`. Проверка приложения:
-`http://localhost:8000/health`.
+## Деплой
 
-## Деплой на Vercel
-
-1. Импортируй репозиторий в Vercel.
-2. В Environment Variables добавь `BOT_TOKEN` со значением токена бота.
-3. Нажми Deploy.
-4. Проверь `https://YOUR_DOMAIN/health` — должен вернуться `{"status":"ok"}`.
-5. Установи Telegram webhook:
+Проект должен быть связан с Supabase через `supabase link`. Деплой всех функций:
 
 ```bash
-curl "https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=https://YOUR_DOMAIN/webhook"
+npm run deploy:supabase
 ```
 
-После этого отправь боту, например, `курс EUR`.
+Публичные endpoints:
+
+```text
+https://nwedxcpqqqhnehswwlal.supabase.co/functions/v1/messages
+https://nwedxcpqqqhnehswwlal.supabase.co/functions/v1/clients
+```
+
+## Secrets
+
+В Supabase Dashboard → Edge Functions → Secrets должны быть добавлены:
+
+- `BOT_TOKEN`
+- `TELEGRAM_WEBHOOK_SECRET`
+
+Никогда не добавляй их в Git или README.

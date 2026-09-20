@@ -1,0 +1,7 @@
+{
+  "name": "currency-telegram-bot",
+  "private": true,
+  "scripts": {
+    "deploy:supabase": "supabase functions deploy --use-api"
+  }
+}
